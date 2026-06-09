@@ -2,7 +2,9 @@ import requests
 
 
 def validate_github_url(url):
+
     try:
+
         parts = url.strip("/").split("/")
 
         owner = parts[-2]
@@ -23,20 +25,16 @@ def fetch_repository_data(url):
 
     api_url = f"https://api.github.com/repos/{owner}/{repo}"
 
+    headers = {
+        "Accept": "application/vnd.github+json"
+    }
+
     try:
 
-        headers = {
-                "Accept": "application/vnd.github+json"
-                }
-
         response = requests.get(
-        api_url,
-        headers=headers
+            api_url,
+            headers=headers
         )
-        
-        
-        
-        
 
         if response.status_code != 200:
             return None
@@ -50,8 +48,8 @@ def fetch_repository_data(url):
             "language": data.get("language"),
             "stars": data.get("stargazers_count"),
             "forks": data.get("forks_count"),
-            "topics": data.get("topics", []),
             "updated_at": data.get("updated_at"),
+            "topics": data.get("topics", []),
             "url": url
         }
 

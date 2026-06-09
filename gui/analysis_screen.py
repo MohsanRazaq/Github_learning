@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox
-from roadmap.contribution_helper import (
-    get_contribution_advice
-)
+
 from roadmap.roadmap_generator import (
     get_roadmap,
     get_difficulty
+)
+
+from roadmap.contribution_helper import (
+    get_contribution_advice
 )
 
 from database.db_manager import save_repository
@@ -14,12 +16,14 @@ from database.db_manager import save_repository
 class AnalysisScreen(tk.Toplevel):
 
     def __init__(self, parent, data):
+
         super().__init__(parent)
 
         self.data = data
 
         self.title("Repository Analysis")
-        self.geometry("800x600")
+
+        self.geometry("850x700")
 
         self.create_widgets()
 
@@ -29,9 +33,20 @@ class AnalysisScreen(tk.Toplevel):
             self.data["stars"]
         )
 
+        advice = get_contribution_advice(
+            self.data["stars"]
+        )
+
         roadmap = get_roadmap(
             self.data["language"]
         )
+
+        topics = ", ".join(
+            self.data.get("topics", [])
+        )
+
+        if not topics:
+            topics = "No topics available"
 
         title = tk.Label(
             self,
@@ -51,31 +66,26 @@ Description:
 
 Language: {self.data['language']}
 
+Topics:
+{topics}
+
 Stars: {self.data['stars']}
 
 Forks: {self.data['forks']}
-
-Topics:
-{", ".join(
-    self.data.get("topics", [])
-)}
 
 Last Updated:
 {self.data['updated_at']}
 
 Difficulty Level:
 {difficulty}
-
-advice : {get_contribution_advice(
-    self.data["stars"]
-)}
 """
 
         info_label = tk.Label(
             self,
             text=info,
             justify="left",
-            anchor="w"
+            anchor="w",
+            wraplength=800
         )
 
         info_label.pack(
@@ -98,7 +108,10 @@ advice : {get_contribution_advice(
             roadmap,
             start=1
         ):
-            roadmap_text += f"{i}. {step}\n"
+
+            roadmap_text += (
+                f"{i}. {step}\n"
+            )
 
         roadmap_label = tk.Label(
             self,
@@ -106,7 +119,32 @@ advice : {get_contribution_advice(
             justify="left"
         )
 
-        roadmap_label.pack(pady=10)
+        roadmap_label.pack(
+            pady=10
+        )
+
+        # Contribution Advice Section
+
+        advice_title = tk.Label(
+            self,
+            text="Contribution Advice",
+            font=("Arial", 14, "bold")
+        )
+
+        advice_title.pack(
+            pady=10
+        )
+
+        advice_label = tk.Label(
+            self,
+            text=advice,
+            justify="left",
+            wraplength=700
+        )
+
+        advice_label.pack(
+            pady=5
+        )
 
         save_btn = tk.Button(
             self,
@@ -115,20 +153,24 @@ advice : {get_contribution_advice(
             command=self.save_analysis
         )
 
-        save_btn.pack(pady=10)
+        save_btn.pack(
+            pady=10
+        )
 
-        back_btn = tk.Button(
+        close_btn = tk.Button(
             self,
             text="Close",
             width=20,
             command=self.destroy
         )
 
-        back_btn.pack()
+        close_btn.pack()
 
     def save_analysis(self):
 
-        save_repository(self.data)
+        save_repository(
+            self.data
+        )
 
         messagebox.showinfo(
             "Success",
