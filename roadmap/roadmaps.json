@@ -1,0 +1,150 @@
+{
+    "Python": [
+        "Learn Python Basics (variables, loops, functions)",
+        "Understand Object-Oriented Programming",
+        "Learn virtual environments & pip",
+        "Study testing with pytest",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "JavaScript": [
+        "Master JavaScript Fundamentals (ES6+)",
+        "Learn DOM Manipulation & Events",
+        "Understand Async/Await & Promises",
+        "Learn Node.js basics (if backend repo)",
+        "Study npm/yarn package management",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "TypeScript": [
+        "Learn JavaScript Fundamentals first",
+        "Understand TypeScript types & interfaces",
+        "Learn generics & advanced types",
+        "Study tsconfig.json configuration",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Java": [
+        "Learn Java Fundamentals & Syntax",
+        "Master Object-Oriented Programming",
+        "Understand Maven/Gradle build tools",
+        "Learn Java Collections Framework",
+        "Study unit testing with JUnit",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "C++": [
+        "Learn C++ Basics & Memory Management",
+        "Understand Standard Template Library (STL)",
+        "Master OOP in C++",
+        "Learn CMake / Make build systems",
+        "Study smart pointers & RAII",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "C": [
+        "Learn C Fundamentals & Pointers",
+        "Understand Memory Management (malloc/free)",
+        "Learn Makefiles & build systems",
+        "Study data structures in C",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "C#": [
+        "Learn C# Basics & .NET Framework",
+        "Master Object-Oriented Programming",
+        "Understand LINQ & async patterns",
+        "Learn NuGet package management",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Go": [
+        "Learn Go Basics (goroutines, channels)",
+        "Understand Go modules & packages",
+        "Study error handling patterns in Go",
+        "Learn testing with go test",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Rust": [
+        "Learn Rust Basics & Ownership model",
+        "Understand Borrowing & Lifetimes",
+        "Study Cargo package manager",
+        "Learn error handling (Result/Option)",
+        "Master traits & generics",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Ruby": [
+        "Learn Ruby Basics & Syntax",
+        "Understand Ruby gems & Bundler",
+        "Learn Rails fundamentals (if web project)",
+        "Study RSpec for testing",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "PHP": [
+        "Learn PHP Basics & Syntax",
+        "Understand Composer package management",
+        "Study MVC frameworks (Laravel/Symfony)",
+        "Learn database interaction with PDO",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Swift": [
+        "Learn Swift Basics & Syntax",
+        "Understand Optionals & Error Handling",
+        "Learn Xcode & Interface Builder",
+        "Study SwiftUI or UIKit fundamentals",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Kotlin": [
+        "Learn Kotlin Basics & Syntax",
+        "Understand null safety & data classes",
+        "Learn Gradle build system",
+        "Study Android development (if mobile repo)",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Dart": [
+        "Learn Dart Basics & Syntax",
+        "Understand Flutter framework (if Flutter repo)",
+        "Learn widget lifecycle & state management",
+        "Study pub package manager",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Shell": [
+        "Learn Bash scripting fundamentals",
+        "Understand file I/O & piping",
+        "Study process management & signals",
+        "Learn sed, awk, grep basics",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "HTML": [
+        "Learn HTML5 semantic elements",
+        "Understand CSS3 & Flexbox/Grid",
+        "Study responsive design principles",
+        "Learn browser developer tools",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "R": [
+        "Learn R Basics & Data Types",
+        "Understand tidyverse packages",
+        "Study data visualization with ggplot2",
+        "Learn R Markdown for reproducible research",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Scala": [
+        "Learn Scala Basics & Functional Programming",
+        "Understand sbt build tool",
+        "Study Akka/Play framework (if applicable)",
+        "Learn pattern matching & case classes",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ]
+}
