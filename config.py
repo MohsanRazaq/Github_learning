@@ -46,40 +46,46 @@ COLORS = {
     "accent_glow": "#9b86ff",
     "accent_soft": "#c5b3ff",
 
-    # Semantic colors
-    "success": "#00e676",
-    "success_soft": "#00e67620",
-    "warning": "#ffab40",
-    "warning_soft": "#ffab4020",
-    "danger": "#ff5252",
-    "danger_soft": "#ff525220",
-    "info": "#40c4ff",
-    "info_soft": "#40c4ff20",
+# Default font family for UI elements
 
-    # Text
-    "text_primary": "#eaeaf5",
-    "text_secondary": "#a8a8c8",
-    "text_muted": "#65658a",
-    "text_link": "#82b1ff",
 
-    # Borders & separators
-    "border": "#2a2a50",
-    "border_light": "#35356a",
-    "separator": "#1e1e3a",
+# Semantic colors
+"success": "#00e676",
+"success_soft": "#00e67620",
+"warning": "#ffab40",
+"warning_soft": "#ffab4020",
+"danger": "#ff5252",
+"danger_soft": "#ff525220",
+"info": "#40c4ff",
+"info_soft": "#40c4ff20",
 
-    # Difficulty
-    "difficulty_beginner": "#00e676",
-    "difficulty_intermediate": "#ffab40",
-    "difficulty_advanced": "#ff5252",
+# Text
+"text_primary": "#eaeaf5",
+"text_secondary": "#a8a8c8",
+"text_muted": "#65658a",
+"text_link": "#82b1ff",
 
-    # Progress bar backgrounds
-    "progress_bg": "#1a1a35",
-    "progress_track": "#252548",
+# Borders & separators
+"border": "#2a2a50",
+"border_light": "#35356a",
+"separator": "#1e1e3a",
 
-    # Row alternating
-    "row_even": "#1a1a35",
-    "row_odd": "#161630",
+# Difficulty
+"difficulty_beginner": "#00e676",
+"difficulty_intermediate": "#ffab40",
+"difficulty_advanced": "#ff5252",
+
+# Progress bar backgrounds
+"progress_bg": "#1a1a35",
+"progress_track": "#252548",
+
+# Row alternating
+"row_even": "#1a1a35",
+"row_odd": "#161630",
 }
+
+# Default font family for UI elements
+DEFAULT_FONT = "Inter"
 
 # --- Sample repos for quick-access ---
 SAMPLE_REPOS = [
