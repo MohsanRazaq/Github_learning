@@ -87,7 +87,7 @@ class AnalysisScreen(ctk.CTkToplevel):
         self._create_difficulty_section()
 
         # === SECTION 4: Languages (placeholder, filled async) ===
-        self.lang_card = self._create_section_card("🌐  Languages Used", "Loading...")
+        self.lang_card = self._create_section_card("  Languages Used", "Loading...")
 
         # === SECTION 5: Learning Roadmap ===
         self._create_roadmap_section()
@@ -159,7 +159,7 @@ class AnalysisScreen(ctk.CTkToplevel):
         # URL
         ctk.CTkLabel(
             inner,
-            text=f"🔗  {self.data['url']}",
+            text=f"  {self.data['url']}",
             font=ctk.CTkFont(size=11),
             text_color=COLORS["text_muted"],
             anchor="w"
@@ -173,12 +173,12 @@ class AnalysisScreen(ctk.CTkToplevel):
         stats_frame.pack(fill="x", pady=(0, 12))
 
         stats = [
-            ("⭐", "Stars", str(self.data["stars"])),
-            ("🍴", "Forks", str(self.data["forks"])),
-            ("📋", "Issues", str(self.data.get("open_issues", 0))),
-            ("📝", "License", self.data.get("license", "N/A")),
-            ("🌿", "Branch", self.data.get("default_branch", "main")),
-            ("📅", "Updated", self.data.get("updated_at", "")[:10]),
+            ( "Stars", str(self.data["stars"])),
+            ("Forks", str(self.data["forks"])),
+            ( "Issues", str(self.data.get("open_issues", 0))),
+            ( "License", self.data.get("license", "N/A")),
+            ( "Branch", self.data.get("default_branch", "main")),
+            ( "Updated", self.data.get("updated_at", "")[:10]),
         ]
 
         for emoji, label, value in stats:

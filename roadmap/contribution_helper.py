@@ -8,13 +8,10 @@ multiple repository signals, not just star count.
 def get_contribution_advice(stars, forks=0, open_issues=0,
                             has_wiki=False, license_type="None",
                             topics=None):
-    """
-    Generate contribution advice based on multiple repo signals.
-    Returns a list of advice strings.
-    """
+
     advice = []
 
-    # --- Beginner-friendliness assessment ---
+    # ---  assessment ---
     if stars < 50:
         advice.append(
             " Small, beginner-friendly project — perfect for your first contribution!"
@@ -80,7 +77,7 @@ def get_contribution_advice(stars, forks=0, open_issues=0,
             "🍴 Highly forked — fork the repo, create a feature branch, and submit a PR."
         )
 
-    # --- Topics-based tips ---
+    # --- topics-based tips ---
     if topics:
         topic_set = set(t.lower() for t in topics)
         if "hacktoberfest" in topic_set:
