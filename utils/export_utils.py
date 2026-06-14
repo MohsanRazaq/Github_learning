@@ -1,13 +1,13 @@
 """
 Export utilities for saving analysis results.
-Supports exporting to Markdown and plain text.
+Supports exporting to Markdown and interactive, highly-styled HTML reports.
 """
 import os
 from datetime import datetime
 from config import EXPORT_DIR
 
 
-def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, languages=None):
+def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, languages=None, progress=0):
     """
     Export a single repository analysis as a Markdown file.
     Returns the file path on success, or None on failure.
@@ -29,7 +29,7 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
         "",
         "---",
         "",
-        "##  Repository Information",
+        "## 📋 Repository Information",
         "",
         "| Field | Value |",
         "|-------|-------|",
@@ -37,11 +37,14 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
         f"| **Repository** | {data['repo_name']} |",
         f"| **Description** | {data['description']} |",
         f"| **Primary Language** | {data.get('language', 'N/A')} |",
-        f"| **Stars** |  {data['stars']:,} |",
+        f"| **Stars** | ⭐ {data['stars']:,} |",
         f"| **Forks** | 🍴 {data['forks']:,} |",
-        f"| **Open Issues** |  {data.get('open_issues', 0):,} |",
-        f"| **License** | {data.get('license', 'N/A')} |",
-        f"| **Default Branch** | {data.get('default_branch', 'main')} |",
+        f"| **Open Issues** | 📋 {data.get('open_issues', 0):,} |",
+        f"| **Watchers** | 👁️ {data.get('watchers', 0):,} |",
+        f"| **Size** | 💾 {data.get('size_kb', 0):,} KB |",
+        f"| **License** | 📄 {data.get('license', 'N/A')} |",
+        f"| **Default Branch** | 🌿 {data.get('default_branch', 'main')} |",
+        f"| **Learning Progress** | 📈 {progress}% |",
         f"| **Last Updated** | {data.get('updated_at', 'N/A')[:10]} |",
         f"| **Created** | {data.get('created_at', 'N/A')[:10]} |",
         "",
@@ -50,14 +53,14 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
     # Topics
     topics = data.get("topics", [])
     if topics:
-        lines.append("###  Topics")
+        lines.append("### 🏷️ Topics")
         lines.append("")
         lines.append(", ".join(f"`{t}`" for t in topics))
         lines.append("")
 
     # Difficulty
     lines.extend([
-        "##  Difficulty Assessment",
+        "## 📊 Difficulty Assessment",
         "",
         f"**Level:** {difficulty_name} (Score: {score}/10)",
         "",
@@ -67,7 +70,7 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
     if languages:
         total = sum(languages.values())
         lines.extend([
-            "##  Languages Used",
+            "## 🌐 Languages Used",
             "",
             "| Language | Percentage |",
             "|----------|-----------|",
@@ -79,7 +82,7 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
 
     # Roadmap
     lines.extend([
-        "##  Learning Roadmap",
+        "## 🗺️ Learning Roadmap",
         "",
     ])
     for i, step in enumerate(roadmap, 1):
@@ -88,7 +91,7 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
 
     # Contribution advice
     lines.extend([
-        "##  Contribution Advice",
+        "## 💡 Contribution Advice",
         "",
     ])
     for tip in advice_list:
@@ -104,6 +107,553 @@ def export_analysis_markdown(data, roadmap, advice_list, difficulty_info, langua
     try:
         with open(filepath, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
+        return str(filepath)
+    except OSError:
+        return None
+
+
+def export_analysis_html(data, roadmap, advice_list, difficulty_info, languages=None, progress=0, completed_steps=None, resources=None):
+    """
+    Export a single repository analysis as a premium interactive HTML file.
+    Returns the file path on success, or None on failure.
+    """
+    os.makedirs(EXPORT_DIR, exist_ok=True)
+
+    safe_name = data["repo_name"].replace("/", "_").replace(" ", "_")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{safe_name}_{timestamp}.html"
+    filepath = EXPORT_DIR / filename
+
+    difficulty_name, score, color_key = difficulty_info
+    diff_colors = {
+        "difficulty_beginner": "#00e676",
+        "difficulty_intermediate": "#ffab40",
+        "difficulty_advanced": "#ff5252"
+    }
+    diff_color = diff_colors.get(color_key, "#7c6cff")
+
+    completed_set = set(completed_steps or [])
+    total_steps = len(roadmap)
+
+    # Format Size
+    size_kb = data.get("size_kb", 0)
+    if size_kb >= 1024 * 1024:
+        size_str = f"{size_kb / (1024 * 1024):.2f} GB"
+    elif size_kb >= 1024:
+        size_str = f"{size_kb / 1024:.1f} MB"
+    else:
+        size_str = f"{size_kb} KB"
+
+    # Languages Section
+    lang_html = ""
+    if languages:
+        total = sum(languages.values())
+        lang_html += '<div class="section-card"><h2>🌐 Languages Used</h2><div class="lang-container">'
+        for lang, bytes_count in sorted(languages.items(), key=lambda x: x[1], reverse=True):
+            pct = (bytes_count / total) * 100 if total > 0 else 0
+            lang_html += f"""
+            <div class="lang-row">
+                <span class="lang-name">{lang}</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: {pct:.1f}%;"></div>
+                </div>
+                <span class="lang-pct">{pct:.1f}%</span>
+            </div>
+            """
+        lang_html += '</div></div>'
+
+    # Topics HTML
+    topics_html = ""
+    topics = data.get("topics", [])
+    if topics:
+        topics_html = '<div class="topics-container">'
+        for topic in topics[:10]:
+            topics_html += f'<span class="topic-tag">{topic}</span>'
+        topics_html += '</div>'
+
+    # Roadmap steps checklist
+    roadmap_html = ""
+    for i, step in enumerate(roadmap, 1):
+        checked = "checked" if i in completed_set else ""
+        roadmap_html += f"""
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="{i}" {checked} onchange="updateProgress()">
+            <span class="step-badge">{i}</span>
+            <span class="step-text">{step}</span>
+        </label>
+        """
+
+    # Contribution advice list
+    advice_html = ""
+    for tip in advice_list:
+        advice_html += f"<li>{tip}</li>"
+
+    # Resources HTML
+    resources_html = ""
+    if resources:
+        resources_html += '<div class="section-card"><h2>📚 Learning Resources</h2><div class="resources-grid">'
+        for title, url in resources:
+            resources_html += f'<a href="{url}" target="_blank" class="resource-chip">🔗 {title}</a>'
+        resources_html += '</div></div>'
+
+    html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repository Analysis - {data['repo_name']}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {{
+            --bg-primary: #0d0d1a;
+            --bg-secondary: #151528;
+            --bg-card: #1a1a35;
+            --bg-input: #12122a;
+            --accent: #7c6cff;
+            --accent-glow: rgba(124, 108, 255, 0.4);
+            --text-primary: #eaeaf5;
+            --text-secondary: #a8a8c8;
+            --text-muted: #65658a;
+            --border: #2a2a50;
+            --success: #00e676;
+            --warning: #ffab40;
+            --danger: #ff5252;
+        }}
+
+        * {{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }}
+
+        body {{
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }}
+
+        .container {{
+            max-width: 960px;
+            margin: 0 auto;
+        }}
+
+        /* Header Card */
+        .header-card {{
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }}
+
+        .header-top {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }}
+
+        .repo-title {{
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }}
+
+        .owner {{
+            color: var(--text-secondary);
+            font-weight: 400;
+        }}
+
+        .gen-date {{
+            font-size: 11px;
+            color: var(--text-muted);
+        }}
+
+        .repo-desc {{
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }}
+
+        .topics-container {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }}
+
+        .topic-tag {{
+            background: var(--bg-input);
+            color: var(--accent);
+            border: 1px solid var(--border);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }}
+
+        .repo-link {{
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.2s;
+        }}
+
+        .repo-link:hover {{
+            color: #9488ff;
+        }}
+
+        /* Stats Grid */
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }}
+
+        .stat-card {{
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }}
+
+        .stat-label {{
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }}
+
+        .stat-value {{
+            font-size: 14px;
+            font-weight: 700;
+        }}
+
+        /* Difficulty Badge card */
+        .difficulty-card {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+        }}
+
+        .difficulty-badge {{
+            background: {diff_color};
+            color: var(--bg-primary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+        }}
+
+        /* Sections */
+        .section-card {{
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }}
+
+        h2 {{
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        /* Interactive Roadmap checklist */
+        .roadmap-header {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }}
+
+        .roadmap-progress-bar-bg {{
+            background: var(--bg-input);
+            height: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }}
+
+        .roadmap-progress-bar-fill {{
+            background: var(--accent);
+            height: 100%;
+            border-radius: 5px;
+            width: {progress}%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent);
+        }}
+
+        .roadmap-step {{
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }}
+
+        .roadmap-step:hover {{
+            background: var(--bg-input);
+            border-color: var(--accent);
+        }}
+
+        .step-checkbox {{
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }}
+
+        .step-badge {{
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }}
+
+        .step-text {{
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }}
+
+        .step-checkbox:checked ~ .step-text {{
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }}
+
+        /* Languages */
+        .lang-container {{
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }}
+
+        .lang-row {{
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }}
+
+        .lang-name {{
+            width: 120px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }}
+
+        .lang-bar-bg {{
+            flex-grow: 1;
+            background: var(--bg-input);
+            height: 12px;
+            border-radius: 6px;
+            margin: 0 15px;
+            overflow: hidden;
+        }}
+
+        .lang-bar-fill {{
+            background: var(--accent);
+            height: 100%;
+            border-radius: 6px;
+        }}
+
+        .lang-pct {{
+            width: 50px;
+            text-align: right;
+            color: var(--text-muted);
+            font-family: monospace;
+        }}
+
+        /* Advice list */
+        ul.advice-list {{
+            list-style-position: inside;
+            padding-left: 5px;
+        }}
+
+        ul.advice-list li {{
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }}
+
+        /* Resources grid */
+        .resources-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }}
+
+        .resource-chip {{
+            display: block;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            text-align: center;
+        }}
+
+        .resource-chip:hover {{
+            background: var(--bg-input);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }}
+
+        /* Footer */
+        footer {{
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header-card">
+            <div class="header-top">
+                <h1 class="repo-title"><span class="owner">{data['owner']}</span> / {data['repo_name']}</h1>
+                <span class="gen-date">Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</span>
+            </div>
+            <p class="repo-desc">{data['description']}</p>
+            {topics_html}
+            <a href="{data['url']}" target="_blank" class="repo-link">🔗 View original repository on GitHub</a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">⭐ Stars</span>
+                <span class="stat-value">{data['stars']:,}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">🍴 Forks</span>
+                <span class="stat-value">{data['forks']:,}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">📋 Open Issues</span>
+                <span class="stat-value">{data.get('open_issues', 0):,}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">👁️ Watchers</span>
+                <span class="stat-value">{data.get('watchers', 0):,}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">💾 Size</span>
+                <span class="stat-value">{size_str}</span>
+            </div>
+        </div>
+
+        <!-- Difficulty Card -->
+        <div class="difficulty-card">
+            <div>
+                <h3>Difficulty Level</h3>
+                <p style="font-size: 11px; color: var(--text-muted);">Based on stars, forks, open issues, and repository size.</p>
+            </div>
+            <span class="difficulty-badge">{difficulty_name} (Score: {score}/10)</span>
+        </div>
+
+        <!-- Languages -->
+        {lang_html}
+
+        <!-- Learning Roadmap -->
+        <div class="section-card">
+            <div class="roadmap-header">
+                <h2>🗺️ Learning Roadmap</h2>
+                <span id="progress-text" style="font-size: 12px; color: var(--accent); font-weight: 600;">Progress: {progress}% (0 of {total_steps} completed)</span>
+            </div>
+            <div class="roadmap-progress-bar-bg">
+                <div id="progress-bar" class="roadmap-progress-bar-fill"></div>
+            </div>
+            <div class="steps-container">
+                {roadmap_html}
+            </div>
+        </div>
+
+        <!-- Contribution Advice -->
+        <div class="section-card">
+            <h2>💡 Contribution Advice</h2>
+            <ul class="advice-list">
+                {advice_html}
+            </ul>
+        </div>
+
+        <!-- Learning Resources -->
+        {resources_html}
+
+        <!-- Footer -->
+        <footer>
+            <p>GitHub Learning Assistant v2.0 - Mohsan Razaq & H. Abdul Rehman</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateProgress() {{
+            const checkboxes = document.querySelectorAll('.step-checkbox');
+            const total = checkboxes.length;
+            let checkedCount = 0;
+            
+            checkboxes.forEach(chk => {{
+                if (chk.checked) {{
+                    checkedCount++;
+                }}
+            }});
+
+            const pct = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+            
+            // Update UI
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').innerText = 'Progress: ' + pct + '% (' + checkedCount + ' of ' + total + ' completed)';
+        }}
+
+        // Run on load
+        window.addEventListener('load', updateProgress);
+    </script>
+</body>
+</html>
+"""
+
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(html_content)
         return str(filepath)
     except OSError:
         return None

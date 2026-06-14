@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repository Analysis - flutter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0d0d1a;
+            --bg-secondary: #151528;
+            --bg-card: #1a1a35;
+            --bg-input: #12122a;
+            --accent: #7c6cff;
+            --accent-glow: rgba(124, 108, 255, 0.4);
+            --text-primary: #eaeaf5;
+            --text-secondary: #a8a8c8;
+            --text-muted: #65658a;
+            --border: #2a2a50;
+            --success: #00e676;
+            --warning: #ffab40;
+            --danger: #ff5252;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Header Card */
+        .header-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .repo-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .owner {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .gen-date {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .repo-desc {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .topics-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .topic-tag {
+            background: var(--bg-input);
+            color: var(--accent);
+            border: 1px solid var(--border);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .repo-link {
+            font-size: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.2s;
+        }
+
+        .repo-link:hover {
+            color: #9488ff;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Difficulty Badge card */
+        .difficulty-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+        }
+
+        .difficulty-badge {
+            background: #ff5252;
+            color: var(--bg-primary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        /* Sections */
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Interactive Roadmap checklist */
+        .roadmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .roadmap-progress-bar-bg {
+            background: var(--bg-input);
+            height: 10px;
+            border-radius: 5px;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .roadmap-progress-bar-fill {
+            background: var(--accent);
+            height: 100%;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .roadmap-step {
+            display: flex;
+            align-items: center;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .roadmap-step:hover {
+            background: var(--bg-input);
+            border-color: var(--accent);
+        }
+
+        .step-checkbox {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .step-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .step-checkbox:checked ~ .step-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        /* Languages */
+        .lang-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .lang-row {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .lang-name {
+            width: 120px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .lang-bar-bg {
+            flex-grow: 1;
+            background: var(--bg-input);
+            height: 12px;
+            border-radius: 6px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .lang-bar-fill {
+            background: var(--accent);
+            height: 100%;
+            border-radius: 6px;
+        }
+
+        .lang-pct {
+            width: 50px;
+            text-align: right;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        /* Advice list */
+        ul.advice-list {
+            list-style-position: inside;
+            padding-left: 5px;
+        }
+
+        ul.advice-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        /* Resources grid */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .resource-chip {
+            display: block;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            text-align: center;
+        }
+
+        .resource-chip:hover {
+            background: var(--bg-input);
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header-card">
+            <div class="header-top">
+                <h1 class="repo-title"><span class="owner">flutter</span> / flutter</h1>
+                <span class="gen-date">Generated: 2026-06-14 22:19:04</span>
+            </div>
+            <p class="repo-desc">Flutter makes it easy and fast to build beautiful apps for mobile and beyond</p>
+            <div class="topics-container"><span class="topic-tag">android</span><span class="topic-tag">app-framework</span><span class="topic-tag">cross-platform</span><span class="topic-tag">dart</span><span class="topic-tag">dart-platform</span><span class="topic-tag">desktop</span><span class="topic-tag">flutter</span><span class="topic-tag">flutter-package</span><span class="topic-tag">fuchsia</span><span class="topic-tag">ios</span></div>
+            <a href="https://github.com/flutter/flutter" target="_blank" class="repo-link">🔗 View original repository on GitHub</a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">⭐ Stars</span>
+                <span class="stat-value">176,921</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">🍴 Forks</span>
+                <span class="stat-value">30,516</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">📋 Open Issues</span>
+                <span class="stat-value">12,830</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">👁️ Watchers</span>
+                <span class="stat-value">3,583</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">💾 Size</span>
+                <span class="stat-value">436.5 MB</span>
+            </div>
+        </div>
+
+        <!-- Difficulty Card -->
+        <div class="difficulty-card">
+            <div>
+                <h3>Difficulty Level</h3>
+                <p style="font-size: 11px; color: var(--text-muted);">Based on stars, forks, open issues, and repository size.</p>
+            </div>
+            <span class="difficulty-badge">Expert (Score: 10/10)</span>
+        </div>
+
+        <!-- Languages -->
+        <div class="section-card"><h2>🌐 Languages Used</h2><div class="lang-container">
+            <div class="lang-row">
+                <span class="lang-name">Dart</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 74.5%;"></div>
+                </div>
+                <span class="lang-pct">74.5%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">C++</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 16.5%;"></div>
+                </div>
+                <span class="lang-pct">16.5%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Objective-C++</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 2.8%;"></div>
+                </div>
+                <span class="lang-pct">2.8%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Java</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 2.8%;"></div>
+                </div>
+                <span class="lang-pct">2.8%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Objective-C</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.6%;"></div>
+                </div>
+                <span class="lang-pct">0.6%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">C</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.6%;"></div>
+                </div>
+                <span class="lang-pct">0.6%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Go Template</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.5%;"></div>
+                </div>
+                <span class="lang-pct">0.5%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Python</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.5%;"></div>
+                </div>
+                <span class="lang-pct">0.5%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Kotlin</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.4%;"></div>
+                </div>
+                <span class="lang-pct">0.4%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">GLSL</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.2%;"></div>
+                </div>
+                <span class="lang-pct">0.2%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Swift</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.2%;"></div>
+                </div>
+                <span class="lang-pct">0.2%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Shell</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.1%;"></div>
+                </div>
+                <span class="lang-pct">0.1%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">CMake</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.1%;"></div>
+                </div>
+                <span class="lang-pct">0.1%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">JavaScript</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.1%;"></div>
+                </div>
+                <span class="lang-pct">0.1%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Ruby</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Batchfile</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">HTML</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">PowerShell</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">CSS</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">Lex</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            
+            <div class="lang-row">
+                <span class="lang-name">HLSL</span>
+                <div class="lang-bar-bg">
+                    <div class="lang-bar-fill" style="width: 0.0%;"></div>
+                </div>
+                <span class="lang-pct">0.0%</span>
+            </div>
+            </div></div>
+
+        <!-- Learning Roadmap -->
+        <div class="section-card">
+            <div class="roadmap-header">
+                <h2>🗺️ Learning Roadmap</h2>
+                <span id="progress-text" style="font-size: 12px; color: var(--accent); font-weight: 600;">Progress: 0% (0 of 6 completed)</span>
+            </div>
+            <div class="roadmap-progress-bar-bg">
+                <div id="progress-bar" class="roadmap-progress-bar-fill"></div>
+            </div>
+            <div class="steps-container">
+                
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="1"  onchange="updateProgress()">
+            <span class="step-badge">1</span>
+            <span class="step-text">Learn Dart Basics & Syntax</span>
+        </label>
+        
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="2"  onchange="updateProgress()">
+            <span class="step-badge">2</span>
+            <span class="step-text">Understand Flutter framework (if Flutter repo)</span>
+        </label>
+        
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="3"  onchange="updateProgress()">
+            <span class="step-badge">3</span>
+            <span class="step-text">Learn widget lifecycle & state management</span>
+        </label>
+        
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="4"  onchange="updateProgress()">
+            <span class="step-badge">4</span>
+            <span class="step-text">Study pub package manager</span>
+        </label>
+        
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="5"  onchange="updateProgress()">
+            <span class="step-badge">5</span>
+            <span class="step-text">Learn Git & GitHub workflows</span>
+        </label>
+        
+        <label class="roadmap-step">
+            <input type="checkbox" class="step-checkbox" data-index="6"  onchange="updateProgress()">
+            <span class="step-badge">6</span>
+            <span class="step-text">Read & understand the repository structure</span>
+        </label>
+        
+            </div>
+        </div>
+
+        <!-- Contribution Advice -->
+        <div class="section-card">
+            <h2>💡 Contribution Advice</h2>
+            <ul class="advice-list">
+                <li> Major open-source project — follow their contribution guide strictly.</li><li> Search for 'help wanted' or 'good first issue' labels to get started.</li><li> This repo has 12830 open issues — plenty of opportunities!</li><li> Licensed under BSD-3-Clause — you're free to contribute!</li><li> This project has a wiki — read it for deeper context.</li><li>🍴 Highly forked — fork the repo, create a feature branch, and submit a PR.</li><li>Web project — look for UI/UX improvements or accessibility fixes.</li>
+            </ul>
+        </div>
+
+        <!-- Learning Resources -->
+        
+
+        <!-- Footer -->
+        <footer>
+            <p>GitHub Learning Assistant v2.0 - Mohsan Razaq & H. Abdul Rehman</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.step-checkbox');
+            const total = checkboxes.length;
+            let checkedCount = 0;
+            
+            checkboxes.forEach(chk => {
+                if (chk.checked) {
+                    checkedCount++;
+                }
+            });
+
+            const pct = total > 0 ? Math.round((checkedCount / total) * 100) : 0;
+            
+            // Update UI
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').innerText = 'Progress: ' + pct + '% (' + checkedCount + ' of ' + total + ' completed)';
+        }
+
+        // Run on load
+        window.addEventListener('load', updateProgress);
+    </script>
+</body>
+</html>

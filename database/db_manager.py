@@ -30,7 +30,11 @@ def create_table():
                 open_issues INTEGER DEFAULT 0,
                 license TEXT DEFAULT '',
                 url TEXT UNIQUE,
-                analyzed_date TEXT NOT NULL
+                analyzed_date TEXT NOT NULL,
+                progress_percentage INTEGER DEFAULT 0,
+                completed_steps TEXT DEFAULT '',
+                watchers INTEGER DEFAULT 0,
+                size_kb INTEGER DEFAULT 0
             )
         """)
 
@@ -42,6 +46,10 @@ def create_table():
             "description": "ALTER TABLE repositories ADD COLUMN description TEXT DEFAULT ''",
             "open_issues": "ALTER TABLE repositories ADD COLUMN open_issues INTEGER DEFAULT 0",
             "license": "ALTER TABLE repositories ADD COLUMN license TEXT DEFAULT ''",
+            "progress_percentage": "ALTER TABLE repositories ADD COLUMN progress_percentage INTEGER DEFAULT 0",
+            "completed_steps": "ALTER TABLE repositories ADD COLUMN completed_steps TEXT DEFAULT ''",
+            "watchers": "ALTER TABLE repositories ADD COLUMN watchers INTEGER DEFAULT 0",
+            "size_kb": "ALTER TABLE repositories ADD COLUMN size_kb INTEGER DEFAULT 0",
         }
         for col_name, alter_sql in migrations.items():
             if col_name not in existing_cols:
@@ -63,7 +71,7 @@ def save_repository(data):
         ).fetchone()
 
         if existing:
-            # Update instead of duplicate insert
+            # Update instead of duplicate insert (preserving progress)
             conn.execute("""
                 UPDATE repositories SET
                     repo_name = ?,
@@ -74,6 +82,8 @@ def save_repository(data):
                     forks = ?,
                     open_issues = ?,
                     license = ?,
+                    watchers = ?,
+                    size_kb = ?,
                     analyzed_date = ?
                 WHERE url = ?
             """, (
@@ -85,6 +95,8 @@ def save_repository(data):
                 data.get("forks", 0),
                 data.get("open_issues", 0),
                 data.get("license", ""),
+                data.get("watchers", 0),
+                data.get("size_kb", 0),
                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 data["url"],
             ))
@@ -94,9 +106,9 @@ def save_repository(data):
         conn.execute("""
             INSERT INTO repositories (
                 repo_name, owner, description, language,
-                stars, forks, open_issues, license,
-                url, analyzed_date
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                stars, forks, open_issues, license, watchers, size_kb,
+                url, analyzed_date, progress_percentage, completed_steps
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             data["repo_name"],
             data["owner"],
@@ -106,11 +118,25 @@ def save_repository(data):
             data.get("forks", 0),
             data.get("open_issues", 0),
             data.get("license", ""),
+            data.get("watchers", 0),
+            data.get("size_kb", 0),
             data["url"],
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            data.get("progress_percentage", 0),
+            data.get("completed_steps", ""),
         ))
         conn.commit()
         return True  # New record
+
+
+def update_progress(url, progress_percentage, completed_steps):
+    """Update learning progress for a repository by url."""
+    with _get_connection() as conn:
+        conn.execute(
+            "UPDATE repositories SET progress_percentage = ?, completed_steps = ? WHERE url = ?",
+            (progress_percentage, completed_steps, url)
+        )
+        conn.commit()
 
 
 def get_history(search_query="", language_filter=""):
@@ -121,7 +147,8 @@ def get_history(search_query="", language_filter=""):
     with _get_connection() as conn:
         query = """
             SELECT id, repo_name, owner, description, language,
-                   stars, forks, open_issues, license, url, analyzed_date
+                   stars, forks, open_issues, license, watchers, size_kb, url, analyzed_date,
+                   progress_percentage, completed_steps
             FROM repositories
         """
         conditions = []
