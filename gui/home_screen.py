@@ -13,6 +13,7 @@ from utils.github_search import search_top_repos_by_skill
 from api.github_api import fetch_repository_data
 from gui.analysis_screen import AnalysisScreen
 from gui.history_screen import HistoryScreen
+from gui.search_results_screen import SearchResultsScreen
 from database.db_manager import get_record_count, get_recent_repos
 
 
@@ -426,8 +427,9 @@ class HomeScreen(ctk.CTk):
     # Loading spinner
     # ------------------------------------------------------------------
 
-    def _start_spinner(self):
+    def _start_spinner(self, message="Fetching repository data from GitHub API..."):
         self._loading = True
+        self._spinner_message = message
         self._tick_spinner()
 
     def _tick_spinner(self):
@@ -436,7 +438,7 @@ class HomeScreen(ctk.CTk):
         char = self._spinner_chars[self._spinner_idx % len(self._spinner_chars)]
         self._spinner_idx += 1
         self.status_label.configure(
-            text=f"{char}  Fetching repository data from GitHub API..."
+            text=f"{char}  {self._spinner_message}"
         )
         self.after(80, self._tick_spinner)
 
@@ -469,21 +471,33 @@ class HomeScreen(ctk.CTk):
     # ------------------------------------------------------------------
 
     def _search_by_skill(self):
-        """Search GitHub for top repos matching the entered skill."""
+        """Search GitHub for top repos matching the entered skill in a background thread."""
         skill = self.skill_entry.get().strip()
         if not skill:
             messagebox.showerror("Missing Skill", "Please enter a skill to search.")
             return
-        self.current_skill = skill
-        repos = search_top_repos_by_skill(skill)
+
+        self.skill_btn.configure(state="disabled", text="⏳ Searching...")
+        self._start_spinner(f"Searching GitHub repositories for '{skill}'...")
+
+        def _worker():
+            repos = search_top_repos_by_skill(skill)
+            self.after(0, lambda: self._on_search_complete(skill, repos))
+
+        threading.Thread(target=_worker, daemon=True).start()
+
+    def _on_search_complete(self, skill, repos):
+        """Handle search completion on main thread."""
+        self._stop_spinner()
+        self.skill_btn.configure(state="normal", text="🔎 Find Repos")
+
         if not repos:
             messagebox.showinfo("No results", f"No repositories found for skill '{skill}'.")
             return
-        # Use the first repo result
-        repo_url = repos[0]["html_url"]
-        self.url_entry.delete(0, "end")
-        self.url_entry.insert(0, repo_url)
-        self._analyze_repo()
+
+        self.current_skill = skill
+        # Open SearchResultsScreen modal containing the full list of repos
+        SearchResultsScreen(self, skill, repos)
 
     def _on_fetch_complete(self, data):
         """Handle API response on the main thread."""
