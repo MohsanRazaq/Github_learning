@@ -2,96 +2,160 @@
 
 ## Overview
 
-GitHub Learning Assistant is a modern desktop application developed using Python and CustomTkinter that helps students understand GitHub repositories before contributing to open-source projects.
+GitHub Learning Assistant is a modern desktop application built with **Python**, **CustomTkinter**, and **SQLite** that helps students understand GitHub repositories before contributing to open-source projects.
 
-The application retrieves comprehensive repository information using the GitHub REST API, identifies all technologies used, generates intelligent learning roadmaps for 18+ programming languages, calculates multi-signal difficulty scores, and provides context-aware contribution advice — all stored in a searchable SQLite history.
+The application analyzes repositories using the GitHub REST API, identifies technologies used, calculates difficulty levels, generates personalized learning roadmaps for more than 18 programming languages, and provides contribution guidance based on repository characteristics.
+
+All analyses are stored locally in a searchable SQLite database for future reference.
 
 ---
 
 ## Problem Statement
 
-Many students discover interesting open-source repositories on GitHub but struggle to understand:
+Many students find interesting open-source repositories on GitHub but often struggle to understand:
 
 * What the project does
 * Which technologies are used
 * Whether the project is beginner-friendly
 * What skills are required before contributing
 
-This project simplifies repository exploration and learning.
+GitHub Learning Assistant simplifies repository exploration and helps learners prepare before making contributions.
 
 ---
 
 ## Features
 
 ### Repository Analysis
-* Repository name, owner, description
-* Primary language & all languages used (with percentage breakdown)
-* Stars, forks, open issues, license, default branch
-* Topics/tags detection
+
+* Repository name, owner, and description
+* Primary programming language
+* All languages used with percentage breakdown
+* Stars, forks, and open issues
+* License information
+* Repository topics/tags
+* Default branch
 * Last updated date
 
 ### Smart Difficulty Prediction
-* Multi-signal scoring using stars, forks, open issues, and repository size
-* Four-tier classification: Beginner → Intermediate → Advanced → Expert
-* Color-coded difficulty badges
+
+Difficulty is calculated using multiple repository signals:
+
+* Stars
+* Forks
+* Open Issues
+* Repository Size
+
+Difficulty Levels:
+
+* 🟢 Beginner
+* 🔵 Intermediate
+* 🟠 Advanced
+* 🔴 Expert
 
 ### Dynamic Learning Roadmaps
-* 18 language-specific learning paths loaded from JSON config
-* Easily extensible — just edit `roadmap/roadmaps.json`
-* Visual step-by-step numbered roadmap display
+
+* Supports 18+ programming languages
+* JSON-based roadmap configuration
+* Easy customization through `roadmaps.json`
+* Step-by-step learning paths
 
 ### Context-Aware Contribution Advice
-* Advice based on stars, forks, open issues, license, wiki, and topics
-* Detects Hacktoberfest, ML/AI, and web projects for targeted tips
-* License validation and safety warnings
+
+Provides repository-specific contribution guidance based on:
+
+* Repository popularity
+* Open issues
+* License availability
+* Topics and tags
+* Wiki availability
+
+Special detection for:
+
+* Hacktoberfest projects
+* Machine Learning / AI repositories
+* Web Development projects
 
 ### Analysis History
-* Searchable by name, owner, or description
-* Filterable by programming language
-* Delete with confirmation
-* Duplicate prevention (updates existing records)
 
-### Modern UI
-* Beautiful dark theme with CustomTkinter
-* Card-based layout with color-coded badges
-* Threaded API calls with loading indicators
-* Scrollable analysis view
-* Responsive design
+* SQLite-powered local storage
+* Search by repository name
+* Search by owner
+* Search by description
+* Filter by language
+* Delete records with confirmation
+* Duplicate prevention through automatic updates
+
+### Modern User Interface
+
+* Built with CustomTkinter
+* Dark mode design
+* Card-based layout
+* Color-coded difficulty badges
+* Responsive and scrollable interface
+* Threaded API requests
+* Loading indicators
 
 ---
 
 ## Technology Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Frontend | Python CustomTkinter |
-| Backend | Python |
-| Database | SQLite |
-| API | GitHub REST API |
-| Config | python-dotenv |
-| Version Control | Git + GitHub |
+| Component       | Technology           |
+| --------------- | -------------------- |
+| Frontend        | Python CustomTkinter |
+| Backend         | Python               |
+| Database        | SQLite               |
+| API             | GitHub REST API      |
+| Configuration   | python-dotenv        |
+| Version Control | Git & GitHub         |
 
 ---
 
-## Setup
+## Installation
+
+### Clone Repository
 
 ```bash
-# Clone the repository
 git clone https://github.com/MohsanRazaq/Github_learning.git
 cd Github_learning
+```
 
-# Create and activate virtual environment
+### Create Virtual Environment
+
+```bash
 python -m venv .venv
-source .venv/bin/activate  # Linux/Mac
-# .venv\Scripts\activate   # Windows
+```
 
-# Install dependencies
+#### Linux / macOS
+
+```bash
+source .venv/bin/activate
+```
+
+#### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+### Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-# (Optional) Add your GitHub token for higher API rate limits
-# Edit .env and add: GITHUB_TOKEN=your_token_here
+### Configure GitHub Token (Optional)
 
-# Run the application
+Create a `.env` file and add:
+
+```env
+GITHUB_TOKEN=your_github_token_here
+```
+
+Using a GitHub token increases API rate limits.
+
+### Run Application
+
+```bash
 python main.py
 ```
 
@@ -99,72 +163,92 @@ python main.py
 
 ## Database Schema
 
-**repositories**
+### Table: repositories
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INTEGER | Primary key (auto-increment) |
-| repo_name | TEXT | Repository name |
-| owner | TEXT | Repository owner |
-| description | TEXT | Repository description |
-| language | TEXT | Primary language |
-| stars | INTEGER | Star count |
-| forks | INTEGER | Fork count |
-| open_issues | INTEGER | Open issue count |
-| license | TEXT | License type |
-| url | TEXT | GitHub URL (unique) |
-| analyzed_date | TEXT | Analysis timestamp |
+| Column        | Type    | Description            |
+| ------------- | ------- | ---------------------- |
+| id            | INTEGER | Primary Key            |
+| repo_name     | TEXT    | Repository Name        |
+| owner         | TEXT    | Repository Owner       |
+| description   | TEXT    | Repository Description |
+| language      | TEXT    | Primary Language       |
+| stars         | INTEGER | Star Count             |
+| forks         | INTEGER | Fork Count             |
+| open_issues   | INTEGER | Open Issue Count       |
+| license       | TEXT    | License Type           |
+| url           | TEXT    | GitHub Repository URL  |
+| analyzed_date | TEXT    | Analysis Timestamp     |
 
 ---
 
 ## Project Structure
 
-```
+```text
 Github_learning/
-├── main.py                    # Application entry point
-├── config.py                  # Central configuration (env, colors)
-├── requirements.txt           # Python dependencies
-├── .env                       # Environment variables (not committed)
+│
+├── main.py
+├── config.py
+├── requirements.txt
+├── .env
 ├── .gitignore
+│
 ├── api/
 │   ├── __init__.py
-│   └── github_api.py          # GitHub API integration
+│   └── github_api.py
+│
 ├── database/
 │   ├── __init__.py
-│   └── db_manager.py          # SQLite database operations
+│   └── db_manager.py
+│
 ├── gui/
 │   ├── __init__.py
-│   ├── home_screen.py         # Main application window
-│   ├── analysis_screen.py     # Repository analysis display
-│   └── history_screen.py      # Saved analysis history
+│   ├── home_screen.py
+│   ├── analysis_screen.py
+│   └── history_screen.py
+│
 └── roadmap/
     ├── __init__.py
-    ├── roadmaps.json           # Language roadmap configs (18 languages)
-    ├── roadmap_generator.py    # Roadmap & difficulty calculation
-    └── contribution_helper.py  # Contribution advice engine
+    ├── roadmaps.json
+    ├── roadmap_generator.py
+    └── contribution_helper.py
 ```
 
 ---
 
 ## Future Scope
 
-* AI Repository Explanation (LLM integration)
+* AI Repository Explanation
 * README Summarization
 * Repository Health Analysis
 * Contribution Opportunity Detection
 * Security Analysis
 * AI Chat Assistant
-* Export to PDF / Markdown
+* Export Reports to PDF
+* Export Reports to Markdown
 
 ---
 
 ## Team Members
 
+### Developers
+
 * Mohsan Razaq
 * H. Abdul Rehman
 
+### Supervisor
+
+* Miss Aqsa Afzal
+
 ---
 
-## Supervisor
+## Repository Link
 
-Miss Aqsa Afzal
+GitHub Repository:
+
+https://github.com/MohsanRazaq/Github_learning
+
+---
+
+## License
+
+This project is developed for educational and learning purposes. Feel free to fork, learn from, and contribute to the project.
