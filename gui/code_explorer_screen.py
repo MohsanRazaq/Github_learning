@@ -66,7 +66,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             header,
-            text=f"📂  Code Explorer: {self.owner}/{self.repo}",
+            text=f"  Code Explorer: {self.owner}/{self.repo}",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color=COLORS["text_primary"]
         ).pack(side="left", padx=20, pady=10)
@@ -154,7 +154,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
     def _load_tree_data(self):
         """Initiate background thread to load folder structure."""
         # Insert a loading row
-        self.tree.insert("", "end", text="⏳ Loading directory structure...")
+        self.tree.insert("", "end", text=" Loading directory structure...")
 
         def _worker():
             # Get default branch tree recursively
@@ -179,7 +179,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
 
         items = data.get("tree", [])
         if not items:
-            self.tree.insert("", "end", text="⚠️ Empty Repository")
+            self.tree.insert("", "end", text=" Empty Repository")
             self.status_lbl.configure(text="Empty Repository")
             return
 
@@ -202,7 +202,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
             parent_node = nodes.get(parent_path, "")
 
             # Set emoji/icon
-            icon = "📁 " if type_ == "tree" else "📄 "
+            icon = "" if type_ == "tree" else " "
 
             # Insert node
             node_id = self.tree.insert(
@@ -221,7 +221,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
         """Display error banner inside Treeview."""
         for item in self.tree.get_children():
             self.tree.delete(item)
-        self.tree.insert("", "end", text=f"❌ Load Failed: {message}")
+        self.tree.insert("", "end", text=f" Load Failed: {message}")
         self.status_lbl.configure(text="Loading failed")
         messagebox.showerror("Connection Error", f"Could not load repository structure:\n{message}")
 
@@ -249,7 +249,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
         # Format size display
         size_lbl = f"{size / 1024:.1f} KB" if size >= 1024 else f"{size} Bytes"
         
-        self.file_name_label.configure(text=f"📄 {path}")
+        self.file_name_label.configure(text=f" {path}")
         self.file_size_label.configure(text=size_lbl)
 
         # Check for binary file extensions to avoid garbled viewing
@@ -264,7 +264,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
             self.code_text.delete("1.0", "end")
             self.code_text.insert(
                 "1.0",
-                f"❌ Cannot preview binary or extremely large file: {path}\n\n"
+                f" Cannot preview binary or extremely large file: {path}\n\n"
                 f"File size: {size_lbl}\n"
                 f"Please inspect this file directly on GitHub."
             )
@@ -274,7 +274,7 @@ class CodeExplorerScreen(ctk.CTkToplevel):
         # Show loading text
         self.code_text.configure(state="normal")
         self.code_text.delete("1.0", "end")
-        self.code_text.insert("1.0", "⏳ Fetching file content from GitHub raw servers...")
+        self.code_text.insert("1.0", " Fetching file content from GitHub raw servers...")
         self.code_text.configure(state="disabled")
 
         def _fetch():
@@ -285,9 +285,9 @@ class CodeExplorerScreen(ctk.CTkToplevel):
                     text_content = resp.text
                     self.after(0, lambda: self._update_preview_text(text_content))
                 else:
-                    self.after(0, lambda: self._update_preview_text(f"❌ Failed to fetch file: HTTP {resp.status_code}"))
+                    self.after(0, lambda: self._update_preview_text(f" Failed to fetch file: HTTP {resp.status_code}"))
             except Exception as e:
-                self.after(0, lambda: self._update_preview_text(f"❌ Error fetching file:\n{str(e)}"))
+                self.after(0, lambda: self._update_preview_text(f" Error fetching file:\n{str(e)}"))
 
         threading.Thread(target=_fetch, daemon=True).start()
 
