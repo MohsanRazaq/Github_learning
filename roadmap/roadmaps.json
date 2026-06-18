@@ -146,5 +146,69 @@
         "Learn pattern matching & case classes",
         "Learn Git & GitHub workflows",
         "Read & understand the repository structure"
+    ],
+    "SQL": [
+        "Learn core CRUD operations (SELECT, INSERT, UPDATE, DELETE)",
+        "Understand Joins (INNER, LEFT, RIGHT, FULL) and Subqueries",
+        "Master aggregation functions and GROUP BY clauses",
+        "Study indexing, execution plans, and query optimization",
+        "Learn database schema migrations and version control",
+        "Read & understand the repository structure"
+    ],
+    "Docker/DevOps": [
+        "Understand containerization concepts vs Virtual Machines",
+        "Learn Dockerfile syntax and image building basics",
+        "Master Docker Compose for multi-container environments",
+        "Study volume mapping and networking concepts",
+        "Learn Git & GitHub workflows (including CI/CD actions)",
+        "Read & understand the repository structure"
+    ],
+    "Zig": [
+        "Learn Zig syntax, basic control flow, and primitives",
+        "Understand manual memory management and Allocators",
+        "Master defer, errdefer, and Zig's unique error handling",
+        "Study comptime (compile-time code execution)",
+        "Learn the Zig build system instead of Make/CMake",
+        "Read & understand the repository structure"
+    ],
+    "Elixir": [
+        "Learn Elixir syntax and Functional Programming paradigms",
+        "Master Pattern Matching and the Pipe operator",
+        "Understand the Actor model, OTP behaviors, and GenServers",
+        "Study Mix build tool and Hex package management",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Julia": [
+        "Learn Julia basics, dynamic typing, and math-oriented syntax",
+        "Understand Multiple Dispatch (Julia's core design paradigm)",
+        "Study the Pkg package manager and environments",
+        "Learn performance optimization and type stability",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Lua": [
+        "Learn Lua syntax, dynamic typing, and scoping rules",
+        "Master Tables (Lua's singular, powerful data structure)",
+        "Understand Metatables and implementing prototype-based OOP",
+        "Study C API integration and embedding Lua in host programs",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
+    ],
+    "Haskell": [
+        "Learn pure functional programming concepts & immutability",
+        "Understand Strong Static Typing and Type Inference",
+        "Master algebraic data types and pattern matching",
+        "Study Monads, Functors, and Applicatives",
+        "Learn Cabal or Stack build systems",
+        "Read & understand the repository structure"
+    ],
+    "Perl": [
+        "Learn Perl scalar, array, and hash data types",
+        "Master regular expressions and text processing patterns",
+        "Understand CPAN and Perl module management",
+        "Study modern Perl best practices and object-oriented frameworks",
+        "Learn Git & GitHub workflows",
+        "Read & understand the repository structure"
     ]
 }
