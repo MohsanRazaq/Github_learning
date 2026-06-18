@@ -5,6 +5,8 @@ import customtkinter as ctk
 from config import COLORS
 from roadmap.roadmap_generator import get_difficulty
 
+
+
 class CompareScreen(ctk.CTkToplevel):
 
     def __init__(self, parent, repos_data):
