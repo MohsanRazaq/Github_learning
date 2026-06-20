@@ -2,6 +2,7 @@
 GitHub Learning Assistant — Main Entry Point
 A desktop application to analyze GitHub repositories,
 generate learning roadmaps, and track analysis history.
+Seen by Ayesh Very good project I think no changes needed
 """
 import sys
 from pathlib import Path
